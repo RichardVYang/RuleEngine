@@ -47,7 +47,7 @@ public class GreetingServiceImpl implements GreetingService {
     Message<String> msg = MessageBuilder.withPayload(payload).build();
     input.send(msg); // /drop message to input channel
 
-    System.out.println(
+    log.info(
         "GreetingServiceImpl::processGreeting() Message count at output channel: "
             + output.getMessageCount());
 
