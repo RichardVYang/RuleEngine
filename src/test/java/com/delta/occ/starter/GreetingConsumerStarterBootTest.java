@@ -2,6 +2,8 @@ package com.delta.occ.starter;
 
 import com.delta.foundation.mock.MockMessageChannel;
 import com.delta.occ.starter.context.ApplicationContextProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
@@ -24,10 +26,11 @@ Also, JMX are provided. MBeans can be created to instrument, monitor, and change
 public class GreetingConsumerStarterBootTest {
 
   public static void main(String[] args) {
+    Logger log = LoggerFactory.getLogger(GreetingConsumerStarterBootTest.class);
 
     SpringApplication.run(GreetingConsumerStarterBootTest.class, args);
 
-    System.out.println(
+    log.info(
         "Get the Spring Integration input and output channels (beans) provided by Spring Boot:");
     MockMessageChannel input =
         ApplicationContextProvider.getApplicationContext()
