@@ -1,0 +1,22 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:si="http://www.springframework.org/schema/integration"
+       xmlns:mock="http://schema.delta.com/schema/foundation/mock"
+       xmlns:core="http://schema.delta.com/schema/foundation/core"
+       xmlns:starter="http://schema.delta.com/schema/starter/starter"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+    http://schema.delta.com/schema/foundation/mock http://schema.delta.com/schema/foundation/mock.xsd
+    http://schema.delta.com/schema/foundation/core http://schema.delta.com/schema/foundation/core.xsd
+    http://schema.delta.com/schema/starter/starter http://schema.delta.com/schema/starter/starter-0.1.xsd">
+    <mock:channel id="input" />
+    <mock:channel id="output" />
+    <mock:channel id="error" />
+
+    <starter:greeting-consumer-starter id="greeting" input-channel="input" output-channel="output" error-channel="error"/>
+
+    <bean id="applicationContextProvder" class="com.delta.occ.starter.context.ApplicationContextProvider"/>
+
+
+</beans>
