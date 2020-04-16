@@ -1,22 +1,316 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:si="http://www.springframework.org/schema/integration"
-       xmlns:mock="http://schema.delta.com/schema/foundation/mock"
-       xmlns:core="http://schema.delta.com/schema/foundation/core"
-       xmlns:starter="http://schema.delta.com/schema/starter/starter"
        xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-    http://schema.delta.com/schema/foundation/mock http://schema.delta.com/schema/foundation/mock.xsd
-    http://schema.delta.com/schema/foundation/core http://schema.delta.com/schema/foundation/core.xsd
-    http://schema.delta.com/schema/starter/starter http://schema.delta.com/schema/starter/starter-0.1.xsd">
-    <mock:channel id="input" />
-    <mock:channel id="output" />
-    <mock:channel id="error" />
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <starter:greeting-consumer-starter id="greeting" input-channel="input" output-channel="output" error-channel="error"/>
 
-    <bean id="applicationContextProvder" class="com.delta.occ.starter.context.ApplicationContextProvider"/>
+    <bean id="applicationContextProvider" class="com.yang.engine.starter.context.ApplicationContextProvider"/>
+    <bean id="alertProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:alert.properties" />
+    </bean>
+
+    <!-- RuleManager -->
+    <bean id="ruleManager" class="com.yang.engine.starter.rule.RuleManager">
+        <property name="eventRule">
+            <map>
+                <entry key="eta"> <!-- eta rules -->
+                    <map>
+                        <entry key="one" value-ref="etaRuleOne"/>
+                        <entry key="two" value-ref="etaRuleTwo"/>
+                        <entry key="three" value-ref="etaRuleThree"/>
+                        <entry key="four" value-ref="etaRuleFour"/>
+                        <entry key="five" value-ref="etaRuleFive"/>
+                    </map>
+                </entry>
+                <entry key="eto">  <!-- eto rules -->
+                    <map>
+                        <entry key="one" value-ref="etoRuleOne"/>
+                    </map>
+                </entry>
+                <entry key="etd">  <!--  etd rules -->
+                    <map>
+                        <entry key="one" value-ref="etdRuleOne"/>
+                    </map>
+                </entry>
+                <entry key="eon"> <!-- eon rules -->
+                    <map>
+                        <entry key="one" value-ref="eonRuleOne"/>
+                    </map>
+                </entry>
+            </map>
+        </property>
+
+        <!-- Propagated Estimated times -->
+        <property name="estimatedTime">
+            <map>
+                <entry key="ETD" value-ref="estimatedETD"/>
+                <entry key="EON" value-ref="estimatedEON"/>
+                <entry key="ETA" value-ref="estimatedETA"/>
+                <entry key="ETO" value-ref="estimatedETO"/>
+            </map>
+        </property>
+
+        <property name="contextManager" ref="contextManager" />
+
+    </bean>
+
+    <!-- ContextManager  -->
+    <bean id="contextManager" class="com.yang.engine.starter.rule.ContextManager">
+        <property name="contextRule">
+            <map>
+                <entry key="etaContextOne">
+                    <list>
+                        <value>one</value>
+                        <value>two</value>
+                        <value>three</value>
+                        <value>four</value>
+                        <value>five</value>
+                    </list>
+                </entry>
+                <entry key="etaContextTwo">
+                    <list>
+                        <value>three</value>
+                        <value>two</value>
+                        <value>one</value>
+                    </list>
+                </entry>
+                <entry key="etdContextOne">
+                    <list>
+                        <value>one</value>
+                    </list>
+                </entry>
+                <entry key="etoContextOne">
+                    <list>
+                        <value>one</value>
+                    </list>
+                </entry>
+                <entry key="eonContextOne">
+                    <list>
+                        <value>one</value>
+                    </list>
+                </entry>
+
+            </map>
+        </property>
+
+        <!-- Estimated times propagation. An ETD will update an ETO, EON and ETA. 
+        An ETO will update an EON and ETA and an EON will update an ETA -->
+        <property name="estimatedTime">
+            <map>
+                <entry key="ETD">
+                    <list>
+                        <value>ETO</value>
+                        <value>EON</value>
+                        <value>ETA</value>
+                    </list>
+                </entry>
+                <entry key="ETO">
+                    <list>
+                        <value>EON</value>
+                        <value>ETA</value>
+                    </list>
+                </entry>
+                <entry key="EON">
+                    <list>
+                        <value>ETA</value>
+                    </list>
+                </entry>
+                <entry key="ETA">
+                    <list>
+                        <value>EON</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+
+    <!-- A ROLE is associated with flight type and a flight type can is associated with rule that can be updated. This can be updated.
+    NOTE: These roles will need to match exactly the admin role.
+    -->
+        <property name="role">
+            <map>
+                <entry key="admin_role_one">
+                    <map>
+                        <entry key="ferry">
+                            <list>
+                                <value>ETO_TABLE</value> <!-- TODO  externalize into property file -->
+                                <value>ETD_TABLE</value>
+                                <value>RULE_ONE</value>
+                            </list>
+                        </entry>
+                        <entry key="stub">
+                            <list>
+                                <value>ETD_TABLE</value>
+                                <value>RULE_ONE</value>
+                            </list>
+                        </entry>
+                        <entry key="charter">
+                            <list>
+                                <value>ETO_TABLE</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+
+                <entry key="admin_role_two">
+                    <map>
+                        <entry key="charter">
+                            <list>
+                                <value>ETO_TABLE</value>
+                                <value>ETD_TABLE</value>
+                            </list>
+                        </entry>
+                        <entry key="ferry">
+                            <list>
+                                <value>ETO_TABLE</value>
+                            </list>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+
+        </property>
+
+        <!--   Alert section begin -->
+
+        <property name="eventAlert">
+            <map>
+                <entry key="${eventEta}">
+                    <list>
+                        <value>${event.alert.one}</value>
+                        <value>${event.alert.two}</value>
+                        <value>${event.alert.three}</value>
+                        <value>${event.alert.four}</value>
+                        <value>${event.alert.five}</value>
+                    </list>
+                </entry>
+                <entry key="${eventEtd}">
+                    <list>
+                        <value>${event.alert.one}</value>
+                        <value>${event.alert.two}</value>
+                        <value>${event.alert.three}</value>
+                    </list>
+                </entry>
+                <entry key="${eventEto}">
+                    <list>
+                        <value>${event.alert.one}</value>
+                        <value>${event.alert.three}</value>
+                        <value>${event.alert.five}</value>
+                    </list>
+                </entry>
+                <entry key="${eventEon}">
+                    <list>
+                        <value>${event.alert.two}</value>
+                        <value>${event.alert.four}</value>
+                    </list>
+                </entry>
+
+            </map>
+        </property>
+
+        <property name="roleAlert">
+            <map>
+                <entry key="${roleAdmin}">
+                    <list>
+                        <value>${role.alert.one}</value>
+                        <value>${role.alert.two}</value>
+                        <value>${role.alert.three}</value>
+                        <value>${role.alert.four}</value>
+                        <value>${role.alert.five}</value>
+                    </list>
+                </entry>
+                <entry key="${roleDev}">
+                    <list>
+                        <value>${role.alert.one}</value>
+                        <value>${role.alert.two}</value>
+                        <value>${role.alert.three}</value>
+                    </list>
+                </entry>
+                <entry key="${roleUser}">
+                    <list>
+                        <value>${role.alert.one}</value>
+                        <value>${role.alert.three}</value>
+                        <value>${role.alert.five}</value>
+                    </list>
+                </entry>
+                <entry key="${roleSuper}">
+                    <list>
+                        <value>${role.alert.two}</value>
+                        <value>${role.alert.four}</value>
+                    </list>
+                </entry>
+
+            </map>
+        </property>
+
+        <property name="roleToEvent">  <!-- A particular role can invoke certain alert events -->
+            <map>
+                <entry key="${roleAdmin}">
+                    <list>
+                        <value>${eventEta}</value>
+                        <value>${eventEtd}</value>
+                    </list>
+                </entry>
+                <entry key="${roleDev}">
+                    <list>
+                        <value>${roleDev}</value>
+                    </list>
+                </entry>
+                <entry key="${roleUser}">
+                    <list>
+                        <value>${eventEon}</value>
+                    </list>
+                </entry>
+                <entry key="${roleSuper}">
+                    <list>
+                        <value>${eventEto}</value>
+                        <value>${eventEon}</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+
+
+
+    </bean>
+
+    <!-- eta rules  -->
+    <bean id="etaRuleOne" class="com.yang.engine.starter.rule.EtaRuleOne">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <bean id="etaRuleTwo" class="com.yang.engine.starter.rule.EtaRuleTwo">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <bean id="etaRuleThree" class="com.yang.engine.starter.rule.EtaRuleThree">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <bean id="etaRuleFour" class="com.yang.engine.starter.rule.EtaRuleFour">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <bean id="etaRuleFive" class="com.yang.engine.starter.rule.EtaRuleFive">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <!-- etd rules  -->
+    <bean id="etdRuleOne" class="com.yang.engine.starter.rule.EtdRuleOne">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <!-- eto rules -->
+    <bean id="etoRuleOne" class="com.yang.engine.starter.rule.EtoRuleOne">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <!-- eon rules -->
+    <bean id="eonRuleOne" class="com.yang.engine.starter.rule.EonRuleOne">
+        <!--  <property name="name" value="unknown" /> -->
+    </bean>
+    <!-- end rule section -->
+    <!--  Estimated time propagation rules  -->
+    <bean id="estimatedETD" class="com.yang.engine.starter.rule.EstimatedETD">
+    </bean>
+    <bean id="estimatedEON" class="com.yang.engine.starter.rule.EstimatedEON">
+    </bean>
+    <bean id="estimatedETA" class="com.yang.engine.starter.rule.EstimatedETA"></bean>
+    <bean id="estimatedETO" class="com.yang.engine.starter.rule.EstimatedETO"></bean>
+
+    <!--  End estimated time propagation rules -->
 
 
 </beans>

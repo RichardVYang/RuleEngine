@@ -4,24 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.delta.occ.starter</groupId>
-    <artifactId>foundation-springboot-starter</artifactId>
+    <groupId>com.yang.engine.rule</groupId>
+    <artifactId>rule-engine</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
-    <name>Foundation Starter Boot Project</name>
-    <description>This is the template project that should be used to start up any new project.
-        For any project that uses Foundation features with Spring Integration and Spring Boot, this start up project is ready to go.
-        For any project that uses only RESTful API with Spring Boot and has nothing to with Foundation, simply remove the Foundation
-        dependency in POM and the corresponding java packages and resources.
-        This start up project provides samples to run as pure Spring Integation component as well as Spring Integration and Spring Boot
-        RESTful APIs to invoke and use the Foundation Channels.
+    <name>Rule Engine Project</name>
+    <description>Rule Engine using Spring Framework to define sets of rules and one rule points to the next rule based on a given contextual event and event rule.
     </description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.1.5.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -39,39 +34,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
-                <!-- We'll use Log4j instead -->
                 <exclusion>
                     <groupId>ch.qos.logback</groupId>
                     <artifactId>logback-classic</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
 
-        <!-- Actuator to provide features such as health, audits, beans, and much more -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <!--  hateoas capability for hypermedia driven RESTful Web services -->
-        <dependency>
-            <groupId>org.springframework.hateoas</groupId>
-            <artifactId>spring-hateoas</artifactId>
-        </dependency>
-        <!-- JMS  capability  -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
         </dependency>
-
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
         </dependency>
-
 
         <!-- Testing -->
         <dependency>
@@ -87,58 +66,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Foundation Core -->
         <dependency>
-            <groupId>com.delta</groupId>
-            <artifactId>foundation-core</artifactId>
-            <version>0.0.28</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>ignite-core</artifactId>
-                    <groupId>org.apache.ignite</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ignite-shmem</artifactId>
-                    <groupId>org.gridgain</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ignite-spring</artifactId>
-                    <groupId>org.apache.ignite</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>ignite-indexing</artifactId>
-                    <groupId>org.apache.ignite</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>hazelcast</artifactId>
-                    <groupId>com.hazelcast</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>etcd4j</artifactId>
-                    <groupId>org.mousio</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>gossip</artifactId>
-                    <groupId>org.apache.gossip</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>wss4j-policy</artifactId>
-                    <groupId>org.apache.wss4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>wss4j-ws-security-stax</artifactId>
-                    <groupId>org.apache.wss4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>wss4j-ws-security-common</artifactId>
-                    <groupId>org.apache.wss4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>wss4j-ws-security-dom</artifactId>
-                    <groupId>org.apache.wss4j</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+            <version>5.0.9.RELEASE</version>
         </dependency>
 
     </dependencies>
@@ -159,51 +90,6 @@
             </plugin>
         </plugins>
     </build>
-
-
-    <repositories>
-        <!--
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-        -->
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>delta-nexus-release</id>
-            <name>Delta Nexus Repository</name>
-            <url>http://nexus.delta.com/repository/maven-public/</url>
-        </repository>
-
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <id>delta-nexus-snapshots</id>
-            <name>Delta Nexus Repository for Snapshots</name>
-            <url>http://nexus.delta.com/repository/maven-snapshots/</url>
-        </repository>
-
-    </repositories>
-    <pluginRepositories>
-        <!--
-        <pluginRepository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </pluginRepository>
--->
-
-    </pluginRepositories>
-
 
 
 
