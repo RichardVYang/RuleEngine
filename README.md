@@ -1,1 +1,1 @@
-# RuleEngine - simple old program
+# RuleEngine - Junk old program
